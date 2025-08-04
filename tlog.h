@@ -81,7 +81,7 @@ namespace tlog
     static const std::string LOG_CYAN = "\033[36m";      /* Cyan */
     static const std::string LOG_WHITE = "\033[37m";      /* White */
 #else
-	static const char* LOG_RESET = "\033[0m";
+    static const char* LOG_RESET = "\033[0m";
     static const char* LOG_BLACK = "\033[30m";      /* Black */
     static const char* LOG_RED = "\033[31m";      /* Red */
     static const char* LOG_GREEN = "\033[32m";      /* Green */
@@ -155,7 +155,7 @@ namespace tlog
     {
         std::stringstream ss;
 #if (_MSC_VER < 1910)
-		ss << boost::this_thread::get_id();
+	ss << boost::this_thread::get_id();
 #else
         ss << std::this_thread::get_id();
 #endif
@@ -238,23 +238,23 @@ namespace tlog
 	inline std::string gbk_to_utf8(const std::string& src)
 	{
 		std::wstring wtxt = gbkstr2wstr(src, "Chinese");
-        std::string utf8txt = wstr2utf8str(wtxt);
+        	std::string utf8txt = wstr2utf8str(wtxt);
 		return utf8txt;
 	};
 
-#define LOG_PAUSE(msg) Logger::pause(LogTime::now().formatTime()+" [PAUSE]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", msg);
+#define LOG_PAUSE(msg) Logger::pause(LogTime::now().formatTime()+" [PAUSE]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", msg)
 
-#define LOG_EMERG(format, ...) Logger::facade(Priority::EMERG, LogTime::now().formatTime()+" [EMERG]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_FATAL(format, ...) Logger::facade(Priority::FATAL, LogTime::now().formatTime()+" [FATAL]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_ALERT(format, ...) Logger::facade(Priority::ALERT, LogTime::now().formatTime()+" [ALERT]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_CRIT(format, ...) Logger::facade(Priority::CRIT, LogTime::now().formatTime()+" [CRIT]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_ERROR(format, ...) Logger::facade(Priority::ERROR, LogTime::now().formatTime()+" [ERROR]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_WARN(format, ...) Logger::facade(Priority::WARN, LogTime::now().formatTime()+" [WARN]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_INFO(format, ...) Logger::facade(Priority::INFO, LogTime::now().formatTime()+" [INFO]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_TRACE(format, ...) Logger::facade(Priority::TRACE, LogTime::now().formatTime()+" [TRACE]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
-#define LOG_DEBUG(format, ...) Logger::facade(Priority::DEBUG, LogTime::now().formatTime()+" [DEBUG]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__);
+#define LOG_EMERG(format, ...) Logger::facade(Priority::EMERG, LogTime::now().formatTime()+" [EMERG]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_FATAL(format, ...) Logger::facade(Priority::FATAL, LogTime::now().formatTime()+" [FATAL]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_ALERT(format, ...) Logger::facade(Priority::ALERT, LogTime::now().formatTime()+" [ALERT]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_CRIT(format, ...) Logger::facade(Priority::CRIT, LogTime::now().formatTime()+" [CRIT]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_ERROR(format, ...) Logger::facade(Priority::ERROR, LogTime::now().formatTime()+" [ERROR]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_WARN(format, ...) Logger::facade(Priority::WARN, LogTime::now().formatTime()+" [WARN]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_INFO(format, ...) Logger::facade(Priority::INFO, LogTime::now().formatTime()+" [INFO]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_TRACE(format, ...) Logger::facade(Priority::TRACE, LogTime::now().formatTime()+" [TRACE]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
+#define LOG_DEBUG(format, ...) Logger::facade(Priority::DEBUG, LogTime::now().formatTime()+" [DEBUG]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", format, ##__VA_ARGS__)
 
-#define HEX_DUMP(title, hexdata, len) Logger::hexdump(Priority::HEX, LogTime::now().formatTime()+" [HEX]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", title, hexdata, len);
+#define HEX_DUMP(title, hexdata, len) Logger::hexdump(Priority::HEX, LogTime::now().formatTime()+" [HEX]["+tid()+"]["+(MY_FILE(__FILE__))+":"+std::to_string(__LINE__)+"-->"+__FUNCTION__ + "] ", title, hexdata, len)
 
     /***********************************************/
     class LogTime
@@ -298,7 +298,7 @@ namespace tlog
         uint64_t elapsed_milli() const
         {
             return std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::high_resolution_clock::now() - begin_time).count();
+        	std::chrono::high_resolution_clock::now() - begin_time).count();
         }
 
         //微秒
@@ -397,14 +397,14 @@ namespace tlog
 	class LogSafeQueue
 	{
 	public:
-		void push(T value)
+	void push(T value)
         {
             std::lock_guard<std::mutex> lock(mtx);	// 加锁
             LogSafeQueue::q.push(std::move(value));
             cv.notify_one();
         };
 
-		T wait_and_pop()
+	T wait_and_pop()
         {
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(lock, [this] { return !q.empty(); });
@@ -413,7 +413,7 @@ namespace tlog
             return value;
         };
 
-		bool empty() 
+	bool empty() 
         {
             return q.empty();
         };
@@ -762,3 +762,4 @@ namespace tlog
 }
 
 #endif //__TINY_LOG_H_
+
