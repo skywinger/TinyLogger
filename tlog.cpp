@@ -65,9 +65,9 @@ void Logger::write(const std::string & msg)
 
 void Logger::hexdump(const Priority::Value cur_lv, const std::string & prefix, const std::string & title, const byte * hexdata, int len)
 {
-    if (cur_lv != Priority::HEX) return;	//hexdump²»½ÓÊÕcur_lv=HEXÒÔÍâµÄÈÎºÎÈÕÖ¾ÇëÇó
+    if (cur_lv != Priority::HEX) return;	//hexdumpä¸æ¥æ”¶cur_lv=HEXä»¥å¤–çš„ä»»ä½•æ—¥å¿—è¯·æ±‚
 
-    if (hexdata == nullptr)     // ÅĞ¶ÏhexdataÊÇ·ñÎª¿Õ
+    if (hexdata == nullptr)     // åˆ¤æ–­hexdataæ˜¯å¦ä¸ºç©º
     {
         throw std::invalid_argument("argument:hexdata is invalid, is nullptr");
         return;
@@ -75,10 +75,10 @@ void Logger::hexdump(const Priority::Value cur_lv, const std::string & prefix, c
 
     std::atomic<bool> writefile;
 
-    //level=NOTSET(900),cur_lv=NOTSET(900) ¹Ø±ÕËùÓĞÈÕÖ¾, Ìø¹ıNOTSET¼¶±ğ
+    //level=NOTSET(900),cur_lv=NOTSET(900) å…³é—­æ‰€æœ‰æ—¥å¿—, è·³è¿‡NOTSETçº§åˆ«
     if ((level == Priority::NOTSET || cur_lv == Priority::NOTSET) && !console) return;
 
-    //¹ıÂËµÍ¼¶±ğÈÕÖ¾
+    //è¿‡æ»¤ä½çº§åˆ«æ—¥å¿—
     writefile.store(((level >= cur_lv) && (level != Priority::NOTSET)), std::memory_order_relaxed);
     if (!writefile.load(std::memory_order_relaxed) && !console) return;
 	
@@ -191,10 +191,10 @@ void Logger::addToBuffer(const std::string & msg)
 {
 #if (defined(USED_LOCKFREE_QUEUE))
     int retry = 0;
-    while (!log_queue.push(std::move(msg)) && retry++ < 10)  //Ê§°Ü, ÖØÊÔ10´Î
+    while (!log_queue.push(std::move(msg)) && retry++ < 10)  //å¤±è´¥, é‡è¯•10æ¬¡
     {
         //std::cerr << "\nlog queue is full, please wait a moment for retry.";
-        // ¶ÓÁĞÂúÊ±ĞİÃß±ÜÃâÃ¦µÈ
+        // é˜Ÿåˆ—æ»¡æ—¶ä¼‘çœ é¿å…å¿™ç­‰
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         //std::this_thread::yield();
     }
@@ -223,7 +223,7 @@ void Logger::addToConsole(const std::string& color_, const std::string& msg)
 #if defined(_WIN32) || defined(_WIN64)
     if (ansi_supported)
     {
-        // ÓÃANSI×ªÒåÂë
+        // ç”¨ANSIè½¬ä¹‰ç 
 #if (_MSVC_LANG >= 201402L)
         colored_msg.reserve(LOG_RESET.size() + color_.size() + msg.size() + LOG_RESET.size());
 #else
@@ -276,8 +276,8 @@ void Logger::initLogger(const std::string & argv, bool console_, Priority::Value
     auto xth = ([&]
         {
 #if (defined(ENABLED_BATCH_WRITE))
-            const size_t BATCH_SIZE = 100;    // ÅúÁ¿´¦ÀíÊıÁ¿
-            const int MAX_WAIT_MS = 10;       // ×î´óµÈ´ıÊ±¼ä(ºÁÃë)
+            const size_t BATCH_SIZE = 100;    // æ‰¹é‡å¤„ç†æ•°é‡
+            const int MAX_WAIT_MS = 10;       // æœ€å¤§ç­‰å¾…æ—¶é—´(æ¯«ç§’)
 
             std::vector<std::string> batch;
             batch.reserve(BATCH_SIZE);
@@ -290,53 +290,53 @@ void Logger::initLogger(const std::string & argv, bool console_, Priority::Value
                 int wait_count = 0;
                 while (batch.size() < BATCH_SIZE)
                 {
-                    if (log_queue.pop(msg))     // ´Ó¶ÓÁĞÈ¡ÈÕÖ¾
+                    if (log_queue.pop(msg))     // ä»é˜Ÿåˆ—å–æ—¥å¿—
                     {
                         batch.push_back(std::move(msg));
-                        wait_count = 0;  // ÖØÖÃµÈ´ı¼ÆÊı
+                        wait_count = 0;  // é‡ç½®ç­‰å¾…è®¡æ•°
                     }
                     else
                     {
-                        // ¶ÓÁĞ¿ÕÊ±¶ÌÔİµÈ´ı
+                        // é˜Ÿåˆ—ç©ºæ—¶çŸ­æš‚ç­‰å¾…
                         if (++wait_count > MAX_WAIT_MS) break;
                         std::this_thread::sleep_for(std::chrono::milliseconds(1));
                     }
                 }
 
-                // ÅúÁ¿Ğ´ÈëÎÄ¼ş
+                // æ‰¹é‡å†™å…¥æ–‡ä»¶
                 if (!batch.empty())
                 {
-                    // ºÏ²¢ÈÕÖ¾ÏûÏ¢
+                    // åˆå¹¶æ—¥å¿—æ¶ˆæ¯
                     std::string combined;
-                    combined.reserve(len * batch.size());  // Ô¤·ÖÅäÄÚ´æ
+                    combined.reserve(len * batch.size());  // é¢„åˆ†é…å†…å­˜
 
                     for (auto& msg : batch)
                     {
                         combined += std::move(msg);
                     }
 
-                    write(combined);  // µ¥´ÎÎÄ¼şĞ´Èë
+                    write(combined);  // å•æ¬¡æ–‡ä»¶å†™å…¥
                     batch.clear();
                 }
                 else if (_exit_flag.load(std::memory_order_relaxed))
                 {
-                    break;  // ¹Ø±ÕÊ±ÎŞÈÕÖ¾ÔòÍË³ö
+                    break;  // å…³é—­æ—¶æ— æ—¥å¿—åˆ™é€€å‡º
                 }
 #else
-                if (log_queue.pop(msg))     // ´Ó¶ÓÁĞÈ¡ÈÕÖ¾
+                if (log_queue.pop(msg))     // ä»é˜Ÿåˆ—å–æ—¥å¿—
                 {
-                    write(msg);             // Ö±½ÓĞ´ÈëÎÄ¼ş
+                    write(msg);             // ç›´æ¥å†™å…¥æ–‡ä»¶
                 }
                 else
                 {
-                    // ¶ÓÁĞÎª¿ÕÊ±ĞİÃß±ÜÃâÃ¦µÈ
+                    // é˜Ÿåˆ—ä¸ºç©ºæ—¶ä¼‘çœ é¿å…å¿™ç­‰
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
 #endif
             }
 
 #if (defined(ENABLED_BATCH_WRITE))
-            // ÍË³öÇ°È·±£Ğ´ÈëÊ£ÓàÈÕÖ¾
+            // é€€å‡ºå‰ç¡®ä¿å†™å…¥å‰©ä½™æ—¥å¿—
             if (!batch.empty())
             {
                 std::string combined;
@@ -364,7 +364,7 @@ void Logger::initLogger(const std::string & argv, bool console_, Priority::Value
             while (!_exit_flag.load(std::memory_order_relaxed))
             {
                 std::unique_lock<std::mutex> lck(mu);
-                // Èç¹û±êÖ¾Î»²»Îªtrue£¬ÔòµÈ´ı
+                // å¦‚æœæ ‡å¿—ä½ä¸ä¸ºtrueï¼Œåˆ™ç­‰å¾…
                 cv.wait(lck, [&]
                     { return ready; });
                 //auto* temp = new LogBuffer(len);
@@ -420,14 +420,14 @@ void Logger::initLogger(const std::string & argv, bool console_, Priority::Value
             while (!_exit_flag.load(std::memory_order_relaxed))
             {
                 std::unique_lock<std::mutex> lock(console_mu);
-                // µÈ´ı¶ÓÁĞ·Ç¿Õ£¨±ÜÃâÃ¦µÈ£©
+                // ç­‰å¾…é˜Ÿåˆ—éç©ºï¼ˆé¿å…å¿™ç­‰ï¼‰
                 console_cv.wait(lock, []() {
                     return _exit_flag.load(std::memory_order_relaxed) || 
                     !console_queue.empty(); 
                     });
 
-                // ÓÅÏÈ¼ì²éÍË³öÌõ¼ş
-                if (_exit_flag.load(std::memory_order_relaxed)) break;  // °²È«ÍË³ö
+                // ä¼˜å…ˆæ£€æŸ¥é€€å‡ºæ¡ä»¶
+                if (_exit_flag.load(std::memory_order_relaxed)) break;  // å®‰å…¨é€€å‡º
 
 #if (defined(USED_LOCKFREE_QUEUE))
                 std::string msg;
@@ -468,7 +468,7 @@ void Logger::lazyDownLogger()
     _exit_flag.store(true, std::memory_order_relaxed);
 
     if (console_th && console_th->joinable())
-        console_th->join();     //µÈ´ı¿ØÖÆÌ¨´òÓ¡Ïß³ÌÍË³ö
+        console_th->join();     //ç­‰å¾…æ§åˆ¶å°æ‰“å°çº¿ç¨‹é€€å‡º
 
     if (!console_queue.empty())
     {
@@ -476,31 +476,31 @@ void Logger::lazyDownLogger()
     }
 
 #if (defined(USED_LOCKFREE_QUEUE))
-    // µÈ´ıÈÕÖ¾¶ÓÁĞÇå¿Õ
+    // ç­‰å¾…æ—¥å¿—é˜Ÿåˆ—æ¸…ç©º
     while (!log_queue.empty()) 
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     if (th && th->joinable())
-        th->join();     // µÈ´ıĞ´ÈëÏß³ÌÍË³ö
+        th->join();     // ç­‰å¾…å†™å…¥çº¿ç¨‹é€€å‡º
 
     if (!log_queue.empty())
     {
         log_queue.clear();
     }
 #else
-    //Ğ´»º´æÑÓÊ±2Ãë
+    //å†™ç¼“å­˜å»¶æ—¶2ç§’
     while (!log_data.empty())
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     if (th && th->joinable())
-        th->join();     // µÈ´ıĞ´ÈëÏß³ÌÍË³ö
+        th->join();     // ç­‰å¾…å†™å…¥çº¿ç¨‹é€€å‡º
 
     if (th_ && th_->joinable())
-        th_->join();     // µÈ´ı¶¨Ê±ÊØ»¤Ïß³ÌÍË³ö
+        th_->join();     // ç­‰å¾…å®šæ—¶å®ˆæŠ¤çº¿ç¨‹é€€å‡º
 
     if(!log_data.empty())
         log_data.clear();
@@ -538,7 +538,7 @@ void LogBuffer::setStatus(status sta)
 /*****************************************************************************************/
 
 LogFile::LogFile(const std::string & exe_name, const std::string & path, const uintmax_t size) 
-:exe_name(exe_name), path(path), max_size(size), current_size(0), N(0)  //³õÊ¼»¯curr_sizeÎª0, NÎª0
+:exe_name(exe_name), path(path), max_size(size), current_size(0), N(0)  //åˆå§‹åŒ–curr_sizeä¸º0, Nä¸º0
 {
 #if (_MSVC_LANG >= 201402L)
     if (!fs::exists(path))
@@ -645,7 +645,7 @@ void LogFile::rotateFile(const uintmax_t msg_size)
         }
         N++;
 
-        // ...Éú³ÉĞÂÎÄ¼şÃûÂß¼­...
+        // ...ç”Ÿæˆæ–°æ–‡ä»¶åé€»è¾‘...
 #if (_MSVC_LANG >= 201402L)
         fs::path p(exe_name);
         std::string f = p.filename().string();
@@ -658,7 +658,7 @@ void LogFile::rotateFile(const uintmax_t msg_size)
 
         if (!file.is_open())
         {
-            // ³¢ÊÔ´ò¿ªÎÄ¼ş
+            // å°è¯•æ‰“å¼€æ–‡ä»¶
             file.open(path + PATH_SEPARATOR + curr_file_name, std::ios::binary | std::ios::app | std::ios::in | std::ios::out);
             if (file.is_open())
             {
@@ -674,45 +674,56 @@ void LogFile::writeMessage(const std::string & msg)
     uintmax_t msg_size = msg.size();
 
 #if (_MSVC_LANG >= 201402L)
+    fs::path p(exe_name);
+    std::string f = p.filename().string();
+    curr_file_name = f.substr(0, f.rfind(".")) + "_" + LogTime::now().date() + "(" + std::to_string(N) + ")" + ".log";
     if (fs::exists(path + PATH_SEPARATOR + curr_file_name))
     {
         if (current_size + msg_size > max_size)
         {
-            //ĞèÒªÂÖ×ª
+            //éœ€è¦è½®è½¬
             rotateFile(msg_size);
         }
     }
 #elif (_MSVC_LANG == 201103L)
+    fs::path e = exe_name;
+    auto f = e.filename();
+    curr_file_name = f.substr(0, f.rfind(".")) + "_" + LogTime::now().date() + "(" + std::to_string(N) + ")" + ".log";
     std::string filename = path + PATH_SEPARATOR + curr_file_name;
     fs::path p = filename;
     if (fs::exists(p))
     {
         if (current_size + msg_size > max_size)
         {
-            //ĞèÒªÂÖ×ª
+            //éœ€è¦è½®è½¬
             rotateFile(msg_size);
         }
     }
 #endif
     if (!file.is_open())
     {
-        // ³¢ÊÔ´ò¿ªÎÄ¼ş
+        // å°è¯•æ‰“å¼€æ–‡ä»¶
         file.open(path + PATH_SEPARATOR + curr_file_name, std::ios::binary | std::ios::app | std::ios::in | std::ios::out);
+        if (file.is_open())
+        {
+            file.seekp(0, std::ios::end);
+            current_size = file.tellp();
+        }
     }
     
-	//±£´æÎªutf8±àÂë¸ñÊ½ÎÄ¼ş
-	/*if (!is_utf8(msg))
+    //ä¿å­˜ä¸ºutf8ç¼–ç æ ¼å¼æ–‡ä»¶
+    /*if (!is_utf8(msg))
     {
         std::wstring wtxt = gbkstr2wstr(msg, "Chinese");
         std::string utf8txt = wstr2utf8str(wtxt);
         file << utf8txt;
     }*/
-	//±£´æÎªgbk±àÂë¸ñÊ½ÎÄ¼ş
+    //ä¿å­˜ä¸ºgbkç¼–ç æ ¼å¼æ–‡ä»¶
     /*if (is_utf8(msg))
     {
-		std::wstring wtxt = utf8str2wstr(msg);
-		std::string gbktxt = wstr2gbkstr(wtxt, "Chinese");
-		file << gbktxt;
+	std::wstring wtxt = utf8str2wstr(msg);
+	std::string gbktxt = wstr2gbkstr(wtxt, "Chinese");
+	file << gbktxt;
     }
     else
     {
@@ -720,7 +731,7 @@ void LogFile::writeMessage(const std::string & msg)
     }*/
 
     file << msg;
-    file.flush();   // È·±£Êı¾İĞ´Èë´ÅÅÌ
+    file.flush();   // ç¡®ä¿æ•°æ®å†™å…¥ç£ç›˜
     current_size += msg_size;
     //file.close();
 }
@@ -833,3 +844,4 @@ std::string LogTime::formatTime() const
     return format;
 #endif
 }
+
