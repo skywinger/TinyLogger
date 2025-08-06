@@ -700,6 +700,16 @@ void LogFile::writeMessage(const std::string & msg)
         }
     }
 #endif
+    else
+    {
+        //如果不存在新的日志文件, 则将原先文件关闭
+        if (file.is_open())
+            file.close();
+
+        N = 0;
+        curr_file_name = f.substr(0, f.rfind(".")) + "_" + LogTime::now().date() + "(" + std::to_string(N) + ")" + ".log";
+    }
+
     if (!file.is_open())
     {
         // 尝试打开文件
@@ -721,9 +731,9 @@ void LogFile::writeMessage(const std::string & msg)
     //保存为gbk编码格式文件
     /*if (is_utf8(msg))
     {
-	std::wstring wtxt = utf8str2wstr(msg);
-	std::string gbktxt = wstr2gbkstr(wtxt, "Chinese");
-	file << gbktxt;
+		std::wstring wtxt = utf8str2wstr(msg);
+		std::string gbktxt = wstr2gbkstr(wtxt, "Chinese");
+		file << gbktxt;
     }
     else
     {
@@ -844,4 +854,5 @@ std::string LogTime::formatTime() const
     return format;
 #endif
 }
+
 
