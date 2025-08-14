@@ -63,7 +63,7 @@ void Logger::write(const std::string & msg)
     file->writeMessage(std::move(msg));
 }
 
-void Logger::hexdump(const Priority::Value cur_lv, const std::string & prefix, const std::string & title, const byte * hexdata, int len)
+void Logger::hexdump(const Priority::Value cur_lv, const std::string & prefix, const std::string & title, const tlog::byte * hexdata, int len)
 {
     if (cur_lv != Priority::HEX) return;	//hexdump不接收cur_lv=HEX以外的任何日志请求
 
@@ -721,14 +721,14 @@ void LogFile::writeMessage(const std::string & msg)
         }
     }
     
-    //保存为utf8编码格式文件
-    /*if (!is_utf8(msg))
+	//保存为utf8编码格式文件
+	/*if (!is_utf8(msg))
     {
         std::wstring wtxt = gbkstr2wstr(msg, "Chinese");
         std::string utf8txt = wstr2utf8str(wtxt);
         file << utf8txt;
     }*/
-    //保存为gbk编码格式文件
+	//保存为gbk编码格式文件
     /*if (is_utf8(msg))
     {
 		std::wstring wtxt = utf8str2wstr(msg);
@@ -854,5 +854,3 @@ std::string LogTime::formatTime() const
     return format;
 #endif
 }
-
-
