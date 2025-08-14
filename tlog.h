@@ -17,7 +17,7 @@
 
 #define USED_LOCKFREE_QUEUE
 
-#define ENABLED_BATCH_WRITE   //是否启用批量写日志文件
+//#define ENABLED_BATCH_WRITE   //是否启用批量写日志文件
 
 #define PRINT_COLORFUL 1  // 是否启用彩色
 
@@ -81,7 +81,7 @@ namespace tlog
     static const std::string LOG_CYAN = "\033[36m";      /* Cyan */
     static const std::string LOG_WHITE = "\033[37m";      /* White */
 #else
-    static const char* LOG_RESET = "\033[0m";
+	static const char* LOG_RESET = "\033[0m";
     static const char* LOG_BLACK = "\033[30m";      /* Black */
     static const char* LOG_RED = "\033[31m";      /* Red */
     static const char* LOG_GREEN = "\033[32m";      /* Green */
@@ -155,7 +155,7 @@ namespace tlog
     {
         std::stringstream ss;
 #if (_MSC_VER < 1910)
-	ss << boost::this_thread::get_id();
+		ss << boost::this_thread::get_id();
 #else
         ss << std::this_thread::get_id();
 #endif
@@ -238,7 +238,7 @@ namespace tlog
 	inline std::string gbk_to_utf8(const std::string& src)
 	{
 		std::wstring wtxt = gbkstr2wstr(src, "Chinese");
-        	std::string utf8txt = wstr2utf8str(wtxt);
+        std::string utf8txt = wstr2utf8str(wtxt);
 		return utf8txt;
 	};
 
@@ -298,7 +298,7 @@ namespace tlog
         uint64_t elapsed_milli() const
         {
             return std::chrono::duration_cast<std::chrono::milliseconds>(
-        	std::chrono::high_resolution_clock::now() - begin_time).count();
+                std::chrono::high_resolution_clock::now() - begin_time).count();
         }
 
         //微秒
@@ -397,14 +397,14 @@ namespace tlog
 	class LogSafeQueue
 	{
 	public:
-	void push(T value)
+		void push(T value)
         {
             std::lock_guard<std::mutex> lock(mtx);	// 加锁
             LogSafeQueue::q.push(std::move(value));
             cv.notify_one();
         };
 
-	T wait_and_pop()
+		T wait_and_pop()
         {
             std::unique_lock<std::mutex> lock(mtx);
             cv.wait(lock, [this] { return !q.empty(); });
@@ -413,7 +413,7 @@ namespace tlog
             return value;
         };
 
-	bool empty() 
+		bool empty() 
         {
             return q.empty();
         };
@@ -610,18 +610,6 @@ namespace tlog
         explicit Logger() = default;
 
         ~Logger() = default;
-
-        Logger& operator = (const Logger&) = delete;  	// 声明拷贝赋值操作是已删除函数
-
-        Logger(const Logger&) = delete;                	// 声明构造拷贝是已删除函数
-
-        void* operator new (std::size_t) = delete;      // 声明new构建对象是已删除函数
-
-        void* operator new[](std::size_t) = delete;     // 声明new构建对象数组是已删除函数
-
-        void operator delete (void* ptr) = delete;     // 声明delete删除对象是已删除函数
-
-        void operator delete[](void* ptr) = delete;    //  声明delete删除对象数组是已删除函数
 #else
         explicit Logger();
 
@@ -687,7 +675,7 @@ namespace tlog
             }
         };
 
-        static void hexdump(const Priority::Value cur_lv, const std::string& prefix, const std::string& title, const byte* hexdata, int len);
+        static void hexdump(const Priority::Value cur_lv, const std::string& prefix, const std::string& title, const tlog::byte* hexdata, int len);
 
         static void initLogger(const std::string& argv, bool console = false, Priority::Value level = Priority::INFO, uint64_t len = 4096,
             const std::string& path = "./log", uintmax_t size = 1000 * 10 * 1024);//默认单个文件10MB
@@ -701,6 +689,27 @@ namespace tlog
 
         //TODO 日志关闭功能，目前仅仅是使用延时来等待关闭前保证数据写入
         static void lazyDownLogger();
+
+#if (_MSC_VER >= 1800)
+        Logger& operator = (const Logger&) = delete;  	// 声明拷贝赋值操作是已删除函数
+        Logger& operator = (Logger&&) = delete;			// 声明引用赋值操作是已删除函数
+        Logger(const Logger&) = delete;                	// 声明构造拷贝是已删除函数
+        Logger(Logger&&) = delete;						// 声明构造引用是已删除函数
+        void* operator new (std::size_t) = delete;      // 声明new构建对象是已删除函数
+        void* operator new[](std::size_t) = delete;     // 声明new构建对象数组是已删除函数
+        void operator delete (void* ptr) = delete;     // 声明delete删除对象是已删除函数
+        void operator delete[](void* ptr) = delete;    // 声明delete删除对象数组是已删除函数
+#else
+    private:
+        Logger& operator = (const Logger&);  	// 声明拷贝赋值操作是已禁用函数
+        Logger& operator = (Logger&&);			// 声明引用赋值操作是已禁用函数
+        Logger(const Logger&);                	// 声明构造拷贝是已禁用函数
+        Logger(Logger&&);						// 声明构造引用是已禁用函数
+        void* operator new (std::size_t);      // 声明new构建对象是已禁用函数
+        void* operator new[](std::size_t);     // 声明new构建对象数组是已禁用函数
+        void operator delete (void* ptr);     // 声明delete删除对象是已禁用函数
+        void operator delete[](void* ptr);    // 声明delete删除对象数组是已禁用函数
+#endif
 
     private:
         static void write(const std::string& msg);
@@ -762,4 +771,3 @@ namespace tlog
 }
 
 #endif //__TINY_LOG_H_
-
